@@ -50,12 +50,14 @@
         body {
             font-family: 'Orbitron', sans-serif;
             background: linear-gradient(135deg, #1e3a8a, #000);
-            overflow: hidden;
+            overflow-x: hidden;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
         }
         .stars {
             position: fixed;
@@ -78,29 +80,30 @@
         }
         .meteor {
             position: absolute;
-            width: 2px;
-            height: 20px;
+            width: 1px;
+            height: 10px;
             background: linear-gradient(to bottom, #ff4500, transparent);
             animation: meteorFall 1.5s linear infinite;
         }
         @keyframes meteorFall {
             0% { transform: translate(0, -100%) rotate(45deg); opacity: 1; }
-            100% { transform: translate(200px, 100vh) rotate(45deg); opacity: 0; }
+            100% { transform: translate(100px, 100vh) rotate(45deg); opacity: 0; }
         }
         .card {
             animation: fadeIn 0.5s ease-in;
             position: relative;
             background: linear-gradient(135deg, #1e40af, #000);
             border: 2px solid #ff4500;
-            padding: 32px;
+            padding: 16px;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-            max-width: 448px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            max-width: 90%;
             width: 100%;
             text-align: center;
+            box-sizing: border-box;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .pulse {
@@ -120,14 +123,15 @@
         }
         .rocket-container {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 10px;
+            right: 10px;
             display: flex;
             align-items: flex-end;
+            transform: scale(0.7);
         }
         .rocket {
-            font-size: 50px;
-            filter: drop-shadow(0 0 10px #ff4500);
+            font-size: 30px;
+            filter: drop-shadow(0 0 5px #ff4500);
             animation: rocketAscent 1s infinite;
             transition: transform 0.5s ease-in-out;
         }
@@ -137,21 +141,21 @@
             75% { transform: scale(1.1) rotate(5deg); }
         }
         .progress-bar {
-            width: 40px;
-            height: 500px;
+            width: 20px;
+            height: 200px;
             background: transparent;
-            border: 2px solid #00f;
-            border-radius: 10px;
-            margin-right: 20px;
+            border: 1px solid #00f;
+            border-radius: 5px;
+            margin-right: 10px;
             position: relative;
-            box-shadow: 0 0 15px #00f, inset 0 0 5px #00f;
+            box-shadow: 0 0 5px #00f, inset 0 0 3px #00f;
             overflow: hidden;
         }
         .progress-section {
             position: absolute;
             width: 100%;
             background: #00ff00;
-            box-shadow: 0 0 10px #00ff00;
+            box-shadow: 0 0 5px #00ff00;
         }
         .glow-effect {
             position: absolute;
@@ -161,57 +165,57 @@
             animation: glow 0.5s ease-out forwards;
         }
         @keyframes glow {
-            0% { opacity: 0.8; box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff; }
+            0% { opacity: 0.8; box-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff; }
             100% { opacity: 0; box-shadow: none; }
         }
         .progress-label-container {
             position: absolute;
-            top: -50px;
-            width: calc(40px * 2.5);
+            top: -30px;
+            width: calc(20px * 2.5);
             text-align: left;
             left: 0;
         }
         .progress-label {
             color: #ff4500;
-            font-size: calc(16px * (500 / 500));
-            text-shadow: 0 0 5px #ff4500;
+            font-size: 10px;
+            text-shadow: 0 0 3px #ff4500;
             display: inline-block;
             font-family: 'Roboto', sans-serif;
             font-weight: 700;
         }
         .score-counter {
             position: absolute;
-            top: -110px;
+            top: -60px;
             width: 100%;
             text-align: center;
             color: #ffd700;
-            font-size: 24px;
+            font-size: 12px;
             font-weight: bold;
-            text-shadow: 0 0 10px #ff4500, 0 0 15px #ff4500;
+            text-shadow: 0 0 5px #ff4500, 0 0 8px #ff4500;
             background: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 3px 5px;
+            border-radius: 3px;
             animation: scorePulse 0.5s ease-in-out;
         }
         @keyframes scorePulse {
-            0%, 100% { transform: scale(1); text-shadow: 0 0 10px #ff4500, 0 0 15px #ff4500; }
-            50% { transform: scale(1.1); text-shadow: 0 0 15px #ff4500, 0 0 20px #ff4500; }
+            0%, 100% { transform: scale(1); text-shadow: 0 0 5px #ff4500, 0 0 8px #ff4500; }
+            50% { transform: scale(1.1); text-shadow: 0 0 8px #ff4500, 0 0 10px #ff4500; }
         }
         .progress-mark {
             position: absolute;
             width: 100%;
-            height: 2px;
+            height: 1px;
             background: #fff;
             opacity: 0.8;
         }
         .bonus-message {
             position: absolute;
-            top: -140px;
+            top: -80px;
             width: 100%;
             text-align: center;
             color: #00ff00;
-            font-size: 18px;
-            text-shadow: 0 0 5px #00ff00;
+            font-size: 10px;
+            text-shadow: 0 0 3px #00ff00;
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid #00ff00;
             animation: fadeOut 2s ease-out forwards;
@@ -219,18 +223,19 @@
         }
         @keyframes fadeOut {
             0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 0; transform: translateY(-10px); }
         }
         .rocket-final {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 50px;
-            filter: drop-shadow(0 0 10px #ff4500);
+            bottom: 10px;
+            right: 10px;
+            font-size: 30px;
+            filter: drop-shadow(0 0 5px #ff4500);
             transition: transform 2s ease-out;
+            transform: scale(0.7);
         }
         .rocket-final.flying {
-            transform: translateY(-100vh);
+            transform: translateY(-100vh) scale(0.7);
         }
         .celebration-container {
             position: fixed;
@@ -243,8 +248,8 @@
         }
         .celebration-particle {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
             animation: fall 2s linear forwards;
         }
@@ -266,8 +271,8 @@
         }
         .sparkle {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 3px;
+            height: 3px;
             background: #00ff00;
             border-radius: 50%;
             animation: sparkleFade 1.5s ease-out infinite;
@@ -279,51 +284,53 @@
         }
         .quiz-container {
             background-color: #ffffff;
-            padding: 32px;
+            padding: 16px;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-            max-width: 448px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            max-width: 90%;
             width: 100%;
             text-align: center;
+            box-sizing: border-box;
         }
         .title-large {
-            font-size: 1.875rem;
+            font-size: 1.25rem;
             font-weight: bold;
             color: #dc2626;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .title-medium {
-            font-size: 1.5rem;
+            font-size: 1rem;
             font-weight: bold;
             color: #dc2626;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .text-medium {
-            font-size: 1.125rem;
-            color: #d1d5db;
-            margin-bottom: 24px;
-        }
-        .text-large {
-            font-size: 1.25rem;
+            font-size: 0.875rem;
             color: #d1d5db;
             margin-bottom: 16px;
         }
+        .text-large {
+            font-size: 1rem;
+            color: #d1d5db;
+            margin-bottom: 12px;
+        }
         .text-xlarge {
-            font-size: 2.25rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #facc15;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
         .input-field {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #dc2626;
             border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 1.125rem;
+            margin-bottom: 12px;
+            font-size: 1rem;
             color: #ffffff;
             background-color: #1f2937;
             outline: none;
+            box-sizing: border-box;
         }
         .input-field:focus {
             ring: 2px;
@@ -335,9 +342,10 @@
             padding: 12px 16px;
             border-radius: 8px;
             width: 100%;
-            font-size: 1.125rem;
+            font-size: 1rem;
             border: none;
             cursor: pointer;
+            touch-action: manipulation;
         }
         .button-primary:hover {
             filter: brightness(1.1);
@@ -345,12 +353,13 @@
         .button-restart {
             background-color: #dc2626;
             color: #ffffff;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: 8px;
-            width: 160px;
-            font-size: 1.125rem;
+            width: 120px;
+            font-size: 0.875rem;
             border: none;
             cursor: pointer;
+            touch-action: manipulation;
         }
         .button-restart:hover {
             filter: brightness(1.1);
@@ -361,25 +370,90 @@
             align-items: center;
             justify-content: center;
         }
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            .card {
+                padding: 12px;
+            }
+            .quiz-container {
+                padding: 12px;
+            }
+            .title-large {
+                font-size: 1rem;
+            }
+            .title-medium {
+                font-size: 0.875rem;
+            }
+            .text-medium {
+                font-size: 0.75rem;
+            }
+            .text-large {
+                font-size: 0.875rem;
+            }
+            .text-xlarge {
+                font-size: 1.25rem;
+            }
+            .input-field {
+                padding: 8px;
+                font-size: 0.875rem;
+            }
+            .button-primary {
+                padding: 10px 14px;
+                font-size: 0.875rem;
+            }
+            .button-restart {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                width: 100px;
+            }
+            .rocket-container {
+                transform: scale(0.5);
+                bottom: 5px;
+                right: 5px;
+            }
+            .rocket-final {
+                transform: scale(0.5);
+                bottom: 5px;
+                right: 5px;
+            }
+            .progress-bar {
+                width: 15px;
+                height: 150px;
+                margin-right: 5px;
+            }
+            .progress-label {
+                font-size: 8px;
+            }
+            .score-counter {
+                font-size: 10px;
+                top: -50px;
+            }
+            .bonus-message {
+                font-size: 8px;
+                top: -70px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="stars" id="stars"></div>
     <div id="root"></div>
     <script>
-        // Генерация звезд и метеоров на фоне
+        // Генерация звезд и метеоров на фоне (меньше для оптимизации)
         const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            star.style.width = `${Math.random() * 3}px`;
+            star.style.width = `${Math.random() * 2}px`;
             star.style.height = star.style.width;
             star.style.left = `${Math.random() * 100}%`;
             star.style.top = `${Math.random() * 100}%`;
             star.style.animationDelay = `${Math.random() * 2}s`;
             starsContainer.appendChild(star);
         }
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 5; i++) {
             const meteor = document.createElement('div');
             meteor.className = 'meteor';
             meteor.style.left = `${Math.random() * 100}%`;
@@ -527,7 +601,7 @@
         }
 
         function CelebrationFallback() {
-            const particles = Array.from({ length: 300 }).map((_, i) =>
+            const particles = Array.from({ length: 100 }).map((_, i) =>
                 React.createElement('div', {
                     key: i,
                     className: 'celebration-particle',
@@ -539,7 +613,7 @@
                     }
                 })
             );
-            const sparkles = Array.from({ length: 100 }).map((_, i) =>
+            const sparkles = Array.from({ length: 50 }).map((_, i) =>
                 React.createElement('div', {
                     key: `sparkle-${i}`,
                     className: 'sparkle',
@@ -577,7 +651,7 @@
 
             const tasks = allTasks;
             const totalTasks = tasks.length;
-            const sectionHeight = 500 / totalTasks;
+            const sectionHeight = 150 / totalTasks;
             const positions = Array.from({ length: totalTasks }, (_, i) => i * sectionHeight);
             const filledSections = currentTask + 1;
 
@@ -690,7 +764,7 @@
                         React.createElement('p', { className: 'text-medium' }, 'Пройди путь от простых заданий к сложным и стань капитаном галактики!'),
                         React.createElement(
                             'button',
-                            { onClick: handleStart, className: 'button-primary' },
+                            { onClick: handleStart, onTouchEnd: handleStart, className: 'button-primary' },
                             'Начать миссию'
                         )
                     )
@@ -707,7 +781,7 @@
                         React.createElement('p', { className: 'text-xlarge pulse' }, `${score} очков`),
                         React.createElement(
                             'button',
-                            { onClick: handleRestart, className: 'button-restart' },
+                            { onClick: handleRestart, onTouchEnd: handleRestart, className: 'button-restart' },
                             'Новый полёт'
                         )
                     ),
@@ -735,6 +809,7 @@
                         'button',
                         {
                             onClick: handleNext,
+                            onTouchEnd: handleNext,
                             disabled: !userAnswer.trim(),
                             className: 'button-primary'
                         },

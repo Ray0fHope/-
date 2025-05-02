@@ -41,7 +41,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Космические Битвы</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -50,14 +50,12 @@
         body {
             font-family: 'Orbitron', sans-serif;
             background: linear-gradient(135deg, #1e3a8a, #000);
-            overflow-x: hidden;
+            overflow: hidden;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 10px;
-            box-sizing: border-box;
         }
         .stars {
             position: fixed;
@@ -80,30 +78,29 @@
         }
         .meteor {
             position: absolute;
-            width: 1px;
-            height: 10px;
+            width: 2px;
+            height: 20px;
             background: linear-gradient(to bottom, #ff4500, transparent);
             animation: meteorFall 1.5s linear infinite;
         }
         @keyframes meteorFall {
             0% { transform: translate(0, -100%) rotate(45deg); opacity: 1; }
-            100% { transform: translate(100px, 100vh) rotate(45deg); opacity: 0; }
+            100% { transform: translate(200px, 100vh) rotate(45deg); opacity: 0; }
         }
         .card {
             animation: fadeIn 0.5s ease-in;
             position: relative;
             background: linear-gradient(135deg, #1e40af, #000);
             border: 2px solid #ff4500;
-            padding: 16px;
+            padding: 16px; /* Уменьшен для мобильных */
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-            max-width: 90%;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            max-width: 90%; /* Адаптация под мобильные */
             width: 100%;
             text-align: center;
-            box-sizing: border-box;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .pulse {
@@ -123,15 +120,14 @@
         }
         .rocket-container {
             position: fixed;
-            bottom: 10px;
-            right: 10px;
+            bottom: 10px; /* Уменьшен отступ для мобильных */
+            right: 10px; /* Уменьшен отступ для мобильных */
             display: flex;
             align-items: flex-end;
-            transform: scale(0.7);
         }
         .rocket {
-            font-size: 30px;
-            filter: drop-shadow(0 0 5px #ff4500);
+            font-size: 40px; /* Уменьшен размер для мобильных */
+            filter: drop-shadow(0 0 10px #ff4500);
             animation: rocketAscent 1s infinite;
             transition: transform 0.5s ease-in-out;
         }
@@ -141,21 +137,21 @@
             75% { transform: scale(1.1) rotate(5deg); }
         }
         .progress-bar {
-            width: 20px;
-            height: 200px;
+            width: 30px; /* Уменьшен для мобильных */
+            height: 300px; /* Уменьшен для мобильных */
             background: transparent;
-            border: 1px solid #00f;
-            border-radius: 5px;
-            margin-right: 10px;
+            border: 2px solid #00f;
+            border-radius: 10px;
+            margin-right: 10px; /* Уменьшен отступ для мобильных */
             position: relative;
-            box-shadow: 0 0 5px #00f, inset 0 0 3px #00f;
+            box-shadow: 0 0 15px #00f, inset 0 0 5px #00f;
             overflow: hidden;
         }
         .progress-section {
             position: absolute;
             width: 100%;
             background: #00ff00;
-            box-shadow: 0 0 5px #00ff00;
+            box-shadow: 0 0 10px #00ff00;
         }
         .glow-effect {
             position: absolute;
@@ -165,57 +161,57 @@
             animation: glow 0.5s ease-out forwards;
         }
         @keyframes glow {
-            0% { opacity: 0.8; box-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff; }
+            0% { opacity: 0.8; box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff; }
             100% { opacity: 0; box-shadow: none; }
         }
         .progress-label-container {
             position: absolute;
-            top: -30px;
-            width: calc(20px * 2.5);
+            top: -30px; /* Уменьшен для мобильных */
+            width: calc(30px * 2.5);
             text-align: left;
             left: 0;
         }
         .progress-label {
             color: #ff4500;
-            font-size: 10px;
-            text-shadow: 0 0 3px #ff4500;
+            font-size: 12px; /* Уменьшен для мобильных */
+            text-shadow: 0 0 5px #ff4500;
             display: inline-block;
             font-family: 'Roboto', sans-serif;
             font-weight: 700;
         }
         .score-counter {
             position: absolute;
-            top: -60px;
+            top: -70px; /* Уменьшен для мобильных */
             width: 100%;
             text-align: center;
             color: #ffd700;
-            font-size: 12px;
+            font-size: 18px; /* Уменьшен для мобильных */
             font-weight: bold;
-            text-shadow: 0 0 5px #ff4500, 0 0 8px #ff4500;
+            text-shadow: 0 0 10px #ff4500, 0 0 15px #ff4500;
             background: rgba(0, 0, 0, 0.5);
-            padding: 3px 5px;
-            border-radius: 3px;
+            padding: 5px;
+            border-radius: 5px;
             animation: scorePulse 0.5s ease-in-out;
         }
         @keyframes scorePulse {
-            0%, 100% { transform: scale(1); text-shadow: 0 0 5px #ff4500, 0 0 8px #ff4500; }
-            50% { transform: scale(1.1); text-shadow: 0 0 8px #ff4500, 0 0 10px #ff4500; }
+            0%, 100% { transform: scale(1); text-shadow: 0 0 10px #ff4500, 0 0 15px #ff4500; }
+            50% { transform: scale(1.1); text-shadow: 0 0 15px #ff4500, 0 0 20px #ff4500; }
         }
         .progress-mark {
             position: absolute;
             width: 100%;
-            height: 1px;
+            height: 2px;
             background: #fff;
             opacity: 0.8;
         }
         .bonus-message {
             position: absolute;
-            top: -80px;
+            top: -100px; /* Уменьшен для мобильных */
             width: 100%;
             text-align: center;
             color: #00ff00;
-            font-size: 10px;
-            text-shadow: 0 0 3px #00ff00;
+            font-size: 14px; /* Уменьшен для мобильных */
+            text-shadow: 0 0 5px #00ff00;
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid #00ff00;
             animation: fadeOut 2s ease-out forwards;
@@ -223,19 +219,18 @@
         }
         @keyframes fadeOut {
             0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 0; transform: translateY(-20px); }
         }
         .rocket-final {
             position: fixed;
-            bottom: 10px;
-            right: 10px;
-            font-size: 30px;
-            filter: drop-shadow(0 0 5px #ff4500);
+            bottom: 10px; /* Уменьшен для мобильных */
+            right: 10px; /* Уменьшен для мобильных */
+            font-size: 40px; /* Уменьшен для мобильных */
+            filter: drop-shadow(0 0 10px #ff4500);
             transition: transform 2s ease-out;
-            transform: scale(0.7);
         }
         .rocket-final.flying {
-            transform: translateY(-100vh) scale(0.7);
+            transform: translateY(-100vh);
         }
         .celebration-container {
             position: fixed;
@@ -248,8 +243,8 @@
         }
         .celebration-particle {
             position: absolute;
-            width: 5px;
-            height: 5px;
+            width: 8px; /* Уменьшен для мобильных */
+            height: 8px; /* Уменьшен для мобильных */
             border-radius: 50%;
             animation: fall 2s linear forwards;
         }
@@ -271,8 +266,8 @@
         }
         .sparkle {
             position: absolute;
-            width: 3px;
-            height: 3px;
+            width: 4px; /* Уменьшен для мобильных */
+            height: 4px; /* Уменьшен для мобильных */
             background: #00ff00;
             border-radius: 50%;
             animation: sparkleFade 1.5s ease-out infinite;
@@ -284,53 +279,51 @@
         }
         .quiz-container {
             background-color: #ffffff;
-            padding: 16px;
+            padding: 16px; /* Уменьшен для мобильных */
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-            max-width: 90%;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            max-width: 90%; /* Адаптация под мобильные */
             width: 100%;
             text-align: center;
-            box-sizing: border-box;
         }
         .title-large {
-            font-size: 1.25rem;
+            font-size: 1.5rem; /* Уменьшен для мобильных */
             font-weight: bold;
             color: #dc2626;
             margin-bottom: 12px;
         }
         .title-medium {
-            font-size: 1rem;
+            font-size: 1.25rem; /* Уменьшен для мобильных */
             font-weight: bold;
             color: #dc2626;
             margin-bottom: 12px;
         }
         .text-medium {
-            font-size: 0.875rem;
+            font-size: 1rem; /* Уменьшен для мобильных */
             color: #d1d5db;
             margin-bottom: 16px;
         }
         .text-large {
-            font-size: 1rem;
+            font-size: 1.125rem; /* Уменьшен для мобильных */
             color: #d1d5db;
             margin-bottom: 12px;
         }
         .text-xlarge {
-            font-size: 1.5rem;
+            font-size: 1.75rem; /* Уменьшен для мобильных */
             font-weight: bold;
             color: #facc15;
             margin-bottom: 16px;
         }
         .input-field {
             width: 100%;
-            padding: 10px;
+            padding: 10px; /* Уменьшен для мобильных */
             border: 1px solid #dc2626;
             border-radius: 8px;
             margin-bottom: 12px;
-            font-size: 1rem;
+            font-size: 1rem; /* Уменьшен для мобильных */
             color: #ffffff;
             background-color: #1f2937;
             outline: none;
-            box-sizing: border-box;
         }
         .input-field:focus {
             ring: 2px;
@@ -339,13 +332,13 @@
         .button-primary {
             background-color: #dc2626;
             color: #ffffff;
-            padding: 12px 16px;
+            padding: 10px; /* Уменьшен для мобильных */
             border-radius: 8px;
             width: 100%;
-            font-size: 1rem;
+            font-size: 1rem; /* Уменьшен для мобильных */
             border: none;
             cursor: pointer;
-            touch-action: manipulation;
+            touch-action: manipulation; /* Добавлено для сенсорного ввода */
         }
         .button-primary:hover {
             filter: brightness(1.1);
@@ -353,13 +346,13 @@
         .button-restart {
             background-color: #dc2626;
             color: #ffffff;
-            padding: 10px 14px;
+            padding: 10px; /* Уменьшен для мобильных */
             border-radius: 8px;
-            width: 120px;
-            font-size: 0.875rem;
+            width: 140px; /* Уменьшен для мобильных */
+            font-size: 1rem; /* Уменьшен для мобильных */
             border: none;
             cursor: pointer;
-            touch-action: manipulation;
+            touch-action: manipulation; /* Добавлено для сенсорного ввода */
         }
         .button-restart:hover {
             filter: brightness(1.1);
@@ -370,90 +363,25 @@
             align-items: center;
             justify-content: center;
         }
-        @media (max-width: 768px) {
-            body {
-                padding: 5px;
-            }
-            .card {
-                padding: 12px;
-            }
-            .quiz-container {
-                padding: 12px;
-            }
-            .title-large {
-                font-size: 1rem;
-            }
-            .title-medium {
-                font-size: 0.875rem;
-            }
-            .text-medium {
-                font-size: 0.75rem;
-            }
-            .text-large {
-                font-size: 0.875rem;
-            }
-            .text-xlarge {
-                font-size: 1.25rem;
-            }
-            .input-field {
-                padding: 8px;
-                font-size: 0.875rem;
-            }
-            .button-primary {
-                padding: 10px 14px;
-                font-size: 0.875rem;
-            }
-            .button-restart {
-                padding: 8px 12px;
-                font-size: 0.75rem;
-                width: 100px;
-            }
-            .rocket-container {
-                transform: scale(0.5);
-                bottom: 5px;
-                right: 5px;
-            }
-            .rocket-final {
-                transform: scale(0.5);
-                bottom: 5px;
-                right: 5px;
-            }
-            .progress-bar {
-                width: 15px;
-                height: 150px;
-                margin-right: 5px;
-            }
-            .progress-label {
-                font-size: 8px;
-            }
-            .score-counter {
-                font-size: 10px;
-                top: -50px;
-            }
-            .bonus-message {
-                font-size: 8px;
-                top: -70px;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="stars" id="stars"></div>
     <div id="root"></div>
     <script>
-        // Генерация звезд и метеоров на фоне (меньше для оптимизации)
+        // Генерация звезд и метеоров на фоне
         const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 100; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            star.style.width = `${Math.random() * 2}px`;
+            star.style.width = `${Math.random() * 3}px`;
             star.style.height = star.style.width;
             star.style.left = `${Math.random() * 100}%`;
             star.style.top = `${Math.random() * 100}%`;
             star.style.animationDelay = `${Math.random() * 2}s`;
             starsContainer.appendChild(star);
         }
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             const meteor = document.createElement('div');
             meteor.className = 'meteor';
             meteor.style.left = `${Math.random() * 100}%`;
@@ -471,8 +399,8 @@
             console.error('Ошибка инициализации Web Audio API:', e);
         }
 
-        // Функция для воспроизведения одиночного звука
-        function playSound(frequency, duration, type = 'square', volume = 0.2) {
+        // Функция для воспроизведения одиночного звука (громкость уменьшена в 3 раза)
+        function playSound(frequency, duration, type = 'square', volume = 0.0667) {
             if (!audioContext) return;
 
             const oscillator = audioContext.createOscillator();
@@ -489,8 +417,8 @@
             oscillator.stop(audioContext.currentTime + duration);
         }
 
-        // Функция для воспроизведения последовательности нот
-        function playSequence(frequencies, durationPerNote, type = 'square', volume = 0.2) {
+        // Функция для воспроизведения последовательности нот (громкость уменьшена в 3 раза)
+        function playSequence(frequencies, durationPerNote, type = 'square', volume = 0.0667) {
             if (!audioContext) return;
 
             frequencies.forEach((freq, index) => {
@@ -601,7 +529,7 @@
         }
 
         function CelebrationFallback() {
-            const particles = Array.from({ length: 100 }).map((_, i) =>
+            const particles = Array.from({ length: 300 }).map((_, i) =>
                 React.createElement('div', {
                     key: i,
                     className: 'celebration-particle',
@@ -613,7 +541,7 @@
                     }
                 })
             );
-            const sparkles = Array.from({ length: 50 }).map((_, i) =>
+            const sparkles = Array.from({ length: 100 }).map((_, i) =>
                 React.createElement('div', {
                     key: `sparkle-${i}`,
                     className: 'sparkle',
@@ -651,7 +579,7 @@
 
             const tasks = allTasks;
             const totalTasks = tasks.length;
-            const sectionHeight = 150 / totalTasks;
+            const sectionHeight = 300 / totalTasks; // Адаптировано под мобильные
             const positions = Array.from({ length: totalTasks }, (_, i) => i * sectionHeight);
             const filledSections = currentTask + 1;
 
@@ -764,7 +692,7 @@
                         React.createElement('p', { className: 'text-medium' }, 'Пройди путь от простых заданий к сложным и стань капитаном галактики!'),
                         React.createElement(
                             'button',
-                            { onClick: handleStart, onTouchEnd: handleStart, className: 'button-primary' },
+                            { onClick: handleStart, className: 'button-primary' },
                             'Начать миссию'
                         )
                     )
@@ -781,7 +709,7 @@
                         React.createElement('p', { className: 'text-xlarge pulse' }, `${score} очков`),
                         React.createElement(
                             'button',
-                            { onClick: handleRestart, onTouchEnd: handleRestart, className: 'button-restart' },
+                            { onClick: handleRestart, className: 'button-restart' },
                             'Новый полёт'
                         )
                     ),
@@ -809,7 +737,6 @@
                         'button',
                         {
                             onClick: handleNext,
-                            onTouchEnd: handleNext,
                             disabled: !userAnswer.trim(),
                             className: 'button-primary'
                         },
@@ -897,5 +824,6 @@
             root.render(React.createElement(QuizApp));
         }
     </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9396cf398fbf53ee',t:'MTc0NjE4MTQ3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

@@ -208,15 +208,14 @@
             100% { opacity: 0; transform: translateY(-20px); }
         }
         .rocket-final {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            font-size: 40px;
-            filter: drop-shadow(0 0 10px #ff4500);
-            transition: transform 2s ease-out;
+            position: absolute;
+            font-size: 20px;
+            filter: drop-shadow(0 0 5px #ff4500);
+            transition: left 2s ease-out, opacity 2s ease-out;
         }
         .rocket-final.flying {
-            transform: translateY(-100vh);
+            left: 100%;
+            opacity: 0;
         }
         .celebration-container {
             position: fixed;
@@ -354,7 +353,7 @@
             font-size: 20px;
             filter: drop-shadow(0 0 5px #ff4500);
             transition: left 0.5s ease-in-out;
-            bottom: -5px; /* Под шкалой */
+            bottom: -5px;
         }
     </style>
 </head>
@@ -392,7 +391,7 @@
             console.error('Ошибка инициализации Web Audio API:', e);
         }
 
-        // Функция для воспроизведения одиночного звука (громкость уменьшена в 2 раза)
+        // Функция для воспроизведения одиночного звука
         function playSound(frequency, duration, type = 'square', volume = 0.03335) {
             if (!audioContext) return;
 
@@ -410,7 +409,7 @@
             oscillator.stop(audioContext.currentTime + duration);
         }
 
-        // Функция для воспроизведения последовательности нот (громкость уменьшена в 2 раза)
+        // Функция для воспроизведения последовательности нот
         function playSequence(frequencies, durationPerNote, type = 'square', volume = 0.03335) {
             if (!audioContext) return;
 
@@ -450,24 +449,6 @@
                 { question: 'Назови слово, начинающееся на звук "ГР"', start_sound: "гр" },
                 { question: 'Назови слово, начинающееся на звук "ДР"', start_sound: "др" }
             ],
-            soundCount: [
-                { question: 'Сколько звуков в слове "Библиотека"?', correct_answer: "5" },
-                { question: 'Сколько звуков в слове "Ребёнок"?', correct_answer: "3" },
-                { question: 'Сколько звуков в слове "Электростанция"?', correct_answer: "6" },
-                { question: 'Сколько звуков в слове "Космос"?', correct_answer: "4" },
-                { question: 'Сколько звуков в слове "Ракета"?', correct_answer: "4" },
-                { question: 'Сколько звуков в слове "Планета"?', correct_answer: "5" },
-                { question: 'Сколько звуков в слове "Звезда"?', correct_answer: "4" }
-            ],
-            syllableCount: [
-                { question: 'Сколько слогов в слове "Образование"?', correct_answer: "6" },
-                { question: 'Сколько слогов в слове "Кабинет"?', correct_answer: "3" },
-                { question: 'Сколько слогов в слове "Компьютер"?', correct_answer: "3" },
-                { question: 'Сколько слогов в слове "Передача"?', correct_answer: "4" },
-                { question: 'Сколько слогов в слове "Космонавт"?', correct_answer: "3" },
-                { question: 'Сколько слогов в слове "Астероид"?', correct_answer: "4" },
-                { question: 'Сколько слогов в слове "Галактика"?', correct_answer: "4" }
-            ],
             rhyme: [
                 { question: 'Назови слово, которое рифмуется с "Ложка"', correct_answer: "кошка" },
                 { question: 'Назови слово, которое рифмуется с "Диван"', correct_answer: "туман" },
@@ -492,8 +473,6 @@
             ...quizzes.sound.map(task => ({ ...task, category: 'sound' })),
             ...quizzes.soundStart.map(task => ({ ...task, category: 'soundStart' })),
             ...quizzes.rhyme.map(task => ({ ...task, category: 'rhyme' })),
-            ...quizzes.soundCount.map(task => ({ ...task, category: 'soundCount' })),
-            ...quizzes.syllableCount.map(task => ({ ...task, category: 'syllableCount' })),
             ...quizzes.mixed.map(task => ({ ...task, category: 'mixed' }))
         ];
 
@@ -516,7 +495,7 @@
         function RocketFinal({ isFlying }) {
             return React.createElement(
                 'div',
-                { className: `rocket-final ${isFlying ? 'flying' : ''}` },
+                { className: `rocket-final ${isFlying ? 'flying' : ''}`, style: { left: '0%' } },
                 '🚀'
             );
         }

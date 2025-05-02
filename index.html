@@ -56,6 +56,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            flex-direction: column;
         }
         .stars {
             position: fixed;
@@ -92,12 +93,13 @@
             position: relative;
             background: linear-gradient(135deg, #1e40af, #000);
             border: 2px solid #ff4500;
-            padding: 16px; /* Уменьшен для мобильных */
+            padding: 16px;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-            max-width: 90%; /* Адаптация под мобильные */
+            max-width: 90%;
             width: 100%;
             text-align: center;
+            margin-top: 10px; /* Отступ от шкалы */
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -118,44 +120,35 @@
             background-color: #6b7280;
             cursor: not-allowed;
         }
-        .rocket-container {
-            position: fixed;
-            bottom: 10px; /* Уменьшен отступ для мобильных */
-            right: 10px; /* Уменьшен отступ для мобильных */
+        .progress-container {
+            width: 90%;
+            position: absolute;
+            top: 10px;
+            left: 5%;
             display: flex;
-            align-items: flex-end;
-        }
-        .rocket {
-            font-size: 40px; /* Уменьшен размер для мобильных */
-            filter: drop-shadow(0 0 10px #ff4500);
-            animation: rocketAscent 1s infinite;
-            transition: transform 0.5s ease-in-out;
-        }
-        @keyframes rocketAscent {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.1) rotate(-5deg); }
-            75% { transform: scale(1.1) rotate(5deg); }
+            flex-direction: column;
+            align-items: center;
         }
         .progress-bar {
-            width: 30px; /* Уменьшен для мобильных */
-            height: 300px; /* Уменьшен для мобильных */
+            width: 100%;
+            height: 20px; /* Горизонтальная шкала */
             background: transparent;
             border: 2px solid #00f;
             border-radius: 10px;
-            margin-right: 10px; /* Уменьшен отступ для мобильных */
             position: relative;
             box-shadow: 0 0 15px #00f, inset 0 0 5px #00f;
             overflow: hidden;
         }
         .progress-section {
             position: absolute;
-            width: 100%;
+            height: 100%;
             background: #00ff00;
             box-shadow: 0 0 10px #00ff00;
+            transition: width 0.5s ease-in-out;
         }
         .glow-effect {
             position: absolute;
-            width: 100%;
+            height: 100%;
             background: #ffffff;
             opacity: 0;
             animation: glow 0.5s ease-out forwards;
@@ -164,28 +157,21 @@
             0% { opacity: 0.8; box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff; }
             100% { opacity: 0; box-shadow: none; }
         }
-        .progress-label-container {
-            position: absolute;
-            top: -30px; /* Уменьшен для мобильных */
-            width: calc(30px * 2.5);
-            text-align: left;
-            left: 0;
-        }
         .progress-label {
             color: #ff4500;
-            font-size: 12px; /* Уменьшен для мобильных */
+            font-size: 12px;
             text-shadow: 0 0 5px #ff4500;
-            display: inline-block;
             font-family: 'Roboto', sans-serif;
             font-weight: 700;
+            margin-bottom: 5px;
         }
         .score-counter {
             position: absolute;
-            top: -70px; /* Уменьшен для мобильных */
+            top: -30px;
             width: 100%;
             text-align: center;
             color: #ffd700;
-            font-size: 18px; /* Уменьшен для мобильных */
+            font-size: 18px;
             font-weight: bold;
             text-shadow: 0 0 10px #ff4500, 0 0 15px #ff4500;
             background: rgba(0, 0, 0, 0.5);
@@ -199,18 +185,18 @@
         }
         .progress-mark {
             position: absolute;
-            width: 100%;
-            height: 2px;
+            height: 100%;
+            width: 2px;
             background: #fff;
             opacity: 0.8;
         }
         .bonus-message {
             position: absolute;
-            top: -100px; /* Уменьшен для мобильных */
+            top: -50px;
             width: 100%;
             text-align: center;
             color: #00ff00;
-            font-size: 14px; /* Уменьшен для мобильных */
+            font-size: 14px;
             text-shadow: 0 0 5px #00ff00;
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid #00ff00;
@@ -223,9 +209,9 @@
         }
         .rocket-final {
             position: fixed;
-            bottom: 10px; /* Уменьшен для мобильных */
-            right: 10px; /* Уменьшен для мобильных */
-            font-size: 40px; /* Уменьшен для мобильных */
+            bottom: 10px;
+            right: 10px;
+            font-size: 40px;
             filter: drop-shadow(0 0 10px #ff4500);
             transition: transform 2s ease-out;
         }
@@ -243,8 +229,8 @@
         }
         .celebration-particle {
             position: absolute;
-            width: 8px; /* Уменьшен для мобильных */
-            height: 8px; /* Уменьшен для мобильных */
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             animation: fall 2s linear forwards;
         }
@@ -266,8 +252,8 @@
         }
         .sparkle {
             position: absolute;
-            width: 4px; /* Уменьшен для мобильных */
-            height: 4px; /* Уменьшен для мобильных */
+            width: 4px;
+            height: 4px;
             background: #00ff00;
             border-radius: 50%;
             animation: sparkleFade 1.5s ease-out infinite;
@@ -279,48 +265,48 @@
         }
         .quiz-container {
             background-color: #ffffff;
-            padding: 16px; /* Уменьшен для мобильных */
+            padding: 16px;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-            max-width: 90%; /* Адаптация под мобильные */
+            max-width: 90%;
             width: 100%;
             text-align: center;
         }
         .title-large {
-            font-size: 1.5rem; /* Уменьшен для мобильных */
+            font-size: 1.5rem;
             font-weight: bold;
             color: #dc2626;
             margin-bottom: 12px;
         }
         .title-medium {
-            font-size: 1.25rem; /* Уменьшен для мобильных */
+            font-size: 1.25rem;
             font-weight: bold;
             color: #dc2626;
             margin-bottom: 12px;
         }
         .text-medium {
-            font-size: 1rem; /* Уменьшен для мобильных */
+            font-size: 1rem;
             color: #d1d5db;
             margin-bottom: 16px;
         }
         .text-large {
-            font-size: 1.125rem; /* Уменьшен для мобильных */
+            font-size: 1.125rem;
             color: #d1d5db;
             margin-bottom: 12px;
         }
         .text-xlarge {
-            font-size: 1.75rem; /* Уменьшен для мобильных */
+            font-size: 1.75rem;
             font-weight: bold;
             color: #facc15;
             margin-bottom: 16px;
         }
         .input-field {
             width: 100%;
-            padding: 10px; /* Уменьшен для мобильных */
+            padding: 10px;
             border: 1px solid #dc2626;
             border-radius: 8px;
             margin-bottom: 12px;
-            font-size: 1rem; /* Уменьшен для мобильных */
+            font-size: 1rem;
             color: #ffffff;
             background-color: #1f2937;
             outline: none;
@@ -332,13 +318,13 @@
         .button-primary {
             background-color: #dc2626;
             color: #ffffff;
-            padding: 10px; /* Уменьшен для мобильных */
+            padding: 10px;
             border-radius: 8px;
             width: 100%;
-            font-size: 1rem; /* Уменьшен для мобильных */
+            font-size: 1rem;
             border: none;
             cursor: pointer;
-            touch-action: manipulation; /* Добавлено для сенсорного ввода */
+            touch-action: manipulation;
         }
         .button-primary:hover {
             filter: brightness(1.1);
@@ -346,13 +332,13 @@
         .button-restart {
             background-color: #dc2626;
             color: #ffffff;
-            padding: 10px; /* Уменьшен для мобильных */
+            padding: 10px;
             border-radius: 8px;
-            width: 140px; /* Уменьшен для мобильных */
-            font-size: 1rem; /* Уменьшен для мобильных */
+            width: 140px;
+            font-size: 1rem;
             border: none;
             cursor: pointer;
-            touch-action: manipulation; /* Добавлено для сенсорного ввода */
+            touch-action: manipulation;
         }
         .button-restart:hover {
             filter: brightness(1.1);
@@ -362,6 +348,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+        }
+        .rocket {
+            position: absolute;
+            font-size: 20px; /* Уменьшен размер для горизонтальной шкалы */
+            filter: drop-shadow(0 0 5px #ff4500);
+            transition: left 0.5s ease-in-out;
         }
     </style>
 </head>
@@ -399,7 +391,7 @@
             console.error('Ошибка инициализации Web Audio API:', e);
         }
 
-        // Функция для воспроизведения одиночного звука (громкость уменьшена в 3 раза)
+        // Функция для воспроизведения одиночного звука
         function playSound(frequency, duration, type = 'square', volume = 0.0667) {
             if (!audioContext) return;
 
@@ -417,7 +409,7 @@
             oscillator.stop(audioContext.currentTime + duration);
         }
 
-        // Функция для воспроизведения последовательности нот (громкость уменьшена в 3 раза)
+        // Функция для воспроизведения последовательности нот
         function playSequence(frequencies, durationPerNote, type = 'square', volume = 0.0667) {
             if (!audioContext) return;
 
@@ -579,8 +571,7 @@
 
             const tasks = allTasks;
             const totalTasks = tasks.length;
-            const sectionHeight = 300 / totalTasks; // Адаптировано под мобильные
-            const positions = Array.from({ length: totalTasks }, (_, i) => i * sectionHeight);
+            const sectionWidth = 100 / totalTasks; // Процент ширины для каждой задачи
             const filledSections = currentTask + 1;
 
             const resetState = () => {
@@ -648,7 +639,7 @@
                 setScore(newScore);
                 setTotalBonusPoints(newTotalBonusPoints);
 
-                setRocketPosition(positions[currentTask + 1] || 0);
+                setRocketPosition((currentTask + 1) * sectionWidth);
                 setUserAnswer('');
                 setGlowKey(glowKey + 1);
                 setScoreKey(scoreKey + 1);
@@ -721,6 +712,62 @@
             return [
                 React.createElement(
                     'div',
+                    { className: 'progress-container' },
+                    React.createElement(
+                        'span',
+                        { className: 'progress-label' },
+                        'Энергощит:'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'progress-bar' },
+                        React.createElement(
+                            'div',
+                            { key: scoreKey, className: 'score-counter' },
+                            `Очки: ${score}`
+                        ),
+                        bonusMessage
+                            ? React.createElement(
+                                  'div',
+                                  { key: bonusKey, className: 'bonus-message' },
+                                  bonusMessage
+                              )
+                            : null,
+                        Array.from({ length: totalTasks - 1 }, (_, i) =>
+                            React.createElement('div', {
+                                key: i,
+                                className: 'progress-mark',
+                                style: { left: `${(i + 1) * sectionWidth}%` }
+                            })
+                        ),
+                        React.createElement(
+                            'div',
+                            {
+                                className: 'progress-section',
+                                style: {
+                                    width: `${filledSections * sectionWidth}%`
+                                }
+                            },
+                            React.createElement('div', {
+                                key: glowKey,
+                                className: 'glow-effect',
+                                style: {
+                                    width: `${sectionWidth}%`
+                                }
+                            })
+                        ),
+                        React.createElement(
+                            'div',
+                            {
+                                className: 'rocket',
+                                style: { left: `${rocketPosition}%` }
+                            },
+                            '🚀'
+                        )
+                    )
+                ),
+                React.createElement(
+                    'div',
                     { className: 'quiz-container card flex-col-center' },
                     React.createElement('h1', { className: 'title-medium' }, `Миссия ${currentTask + 1}`),
                     React.createElement('p', { className: 'text-medium' }, tasks[currentTask].question),
@@ -741,72 +788,6 @@
                             className: 'button-primary'
                         },
                         'Огонь!'
-                    )
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'rocket-container' },
-                    React.createElement(
-                        'div',
-                        { style: { position: 'relative' } },
-                        React.createElement(
-                            'div',
-                            { className: 'progress-label-container' },
-                            React.createElement(
-                                'span',
-                                { className: 'progress-label' },
-                                `Энергощит: ${currentTask + 1}/${totalTasks}`
-                            )
-                        ),
-                        React.createElement(
-                            'div',
-                            { className: 'progress-bar' },
-                            React.createElement(
-                                'div',
-                                { key: scoreKey, className: 'score-counter' },
-                                `Очки: ${score}`
-                            ),
-                            bonusMessage
-                                ? React.createElement(
-                                      'div',
-                                      { key: bonusKey, className: 'bonus-message' },
-                                      bonusMessage
-                                  )
-                                : null,
-                            positions.map((pos, index) =>
-                                React.createElement('div', {
-                                    key: index,
-                                    className: 'progress-mark',
-                                    style: { bottom: `${pos}px` }
-                                })
-                            ),
-                            React.createElement(
-                                'div',
-                                {
-                                    className: 'progress-section',
-                                    style: {
-                                        bottom: 0,
-                                        height: `${filledSections * sectionHeight}px`
-                                    }
-                                },
-                                React.createElement('div', {
-                                    key: glowKey,
-                                    className: 'glow-effect',
-                                    style: {
-                                        bottom: 0,
-                                        height: `${sectionHeight}px`
-                                    }
-                                })
-                            )
-                        )
-                    ),
-                    React.createElement(
-                        'div',
-                        {
-                            className: 'rocket',
-                            style: { transform: `translateY(-${rocketPosition}px)` }
-                        },
-                        '🚀'
                     )
                 )
             ];

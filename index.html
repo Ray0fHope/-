@@ -1,0 +1,1346 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Вселенная звука</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #4B0082, #000);
+            overflow: hidden;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: transparent;
+            z-index: 1;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+        .meteor {
+            position: absolute;
+            width: 3px;
+            height: 25px;
+            background: linear-gradient(to bottom, #FFD700, transparent);
+            animation: meteorFall 1.5s linear infinite;
+        }
+        @keyframes meteorFall {
+            0% { transform: translate(0, -100%) rotate(45deg); opacity: 1; }
+            100% { transform: translate(200px, 100vh) rotate(45deg); opacity: 0; }
+        }
+        .card {
+            animation: fadeIn 0.5s ease-in;
+            position: relative;
+            background: linear-gradient(135deg, #483D8B, #000);
+            border: 3px solid #FFD700;
+            padding: 12px; /* Reduced from 24px */
+            border-radius: 8px; /* Reduced from 12px */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); /* Reduced shadow */
+            max-width: 90%;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px; /* Reduced from 15px */
+            z-index: 2000;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        button:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+        }
+        button:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+        }
+        .progress-container {
+            width: 90%;
+            position: fixed;
+            top: 10px; /* Reduced from 15px */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 3000;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px; /* Reduced from 25px */
+            background: transparent;
+            border: 2px solid #FFD700; /* Reduced from 3px */
+            border-radius: 8px; /* Reduced from 12px */
+            position: relative;
+            box-shadow: 0 0 15px #FFD700, inset 0 0 5px #FFD700; /* Reduced shadow */
+            overflow: hidden;
+        }
+        .progress-section {
+            position: absolute;
+            height: 100%;
+            background: #00CED1;
+            box-shadow: 0 0 10px #00CED1; /* Reduced shadow */
+            transition: width 0.5s ease-in-out;
+        }
+        .glow-effect {
+            position: absolute;
+            height: 100%;
+            background: #ffffff;
+            opacity: 0;
+            animation: glow 0.5s ease-out forwards;
+        }
+        @keyframes glow {
+            0% { opacity: 0.8; box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff; }
+            100% { opacity: 0; box-shadow: none; }
+        }
+        .progress-label {
+            color: #FFD700;
+            font-size: 14px; /* Reduced from 16px */
+            text-shadow: 0 0 6px #FFD700; /* Reduced from 8px */
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            margin-bottom: 6px; /* Reduced from 8px */
+        }
+        .progress-mark {
+            position: absolute;
+            height: 100%;
+            width: 2px; /* Reduced from 3px */
+            background: #fff;
+            opacity: 0.8;
+        }
+        .character-on-rocket {
+            position: absolute;
+            width: 30px; /* Reduced from 40px */
+            height: 30px; /* Reduced from 40px */
+            transition: left 0.5s ease-in-out;
+            bottom: -8px; /* Reduced from -10px */
+            z-index: 2000;
+            animation: moveUpDown 0.8s infinite alternate;
+        }
+        @keyframes moveUpDown {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-4px); } /* Reduced from -5px */
+        }
+        .character-on-rocket.cheer {
+            animation: cheer 0.5s ease-in-out;
+        }
+        @keyframes cheer {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(15deg); } /* Reduced from -10px */
+        }
+        .character-on-rocket.surprise {
+            animation: surprise 0.5s ease-in-out;
+        }
+        @keyframes surprise {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-4px) scale(1.1); } /* Reduced from -5px and 1.2 */
+        }
+        .rocket-final {
+            position: absolute;
+            font-size: 20px; /* Reduced from 25px */
+            filter: drop-shadow(0 0 6px #FFD700); /* Reduced from 8px */
+            transition: left 2s ease-out, opacity 2s ease-out;
+            z-index: 2000;
+        }
+        .rocket-final.flying {
+            left: 100%;
+            opacity: 0;
+        }
+        .celebration-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .confetti {
+            position: absolute;
+            width: 8px; /* Reduced from 10px */
+            height: 8px; /* Reduced from 10px */
+            background: #FFD700;
+            opacity: 0.9;
+            border-radius: 50%;
+            animation: fallConfetti 2s ease-out forwards;
+        }
+        @keyframes fallConfetti {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 12px; /* Reduced from 24px */
+            border-radius: 8px; /* Reduced from 12px */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); /* Reduced shadow */
+            width: 80%;
+            max-width: 500px; /* Reduced from 600px */
+            text-align: center;
+            position: relative;
+            z-index: 2000;
+            margin-top: 60px; /* Reduced from 80px */
+        }
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3000;
+            animation: fadeOut 1.5s ease-out forwards;
+            animation-delay: 1.5s;
+        }
+        .splash-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .title-large {
+            font-size: 1.5rem; /* Reduced from 2rem */
+            font-weight: bold;
+            color: #FF4500;
+            margin-bottom: 10px; /* Reduced from 16px */
+        }
+        .title-medium {
+            font-size: 1.25rem; /* Reduced from 1.75rem */
+            font-weight: bold;
+            color: #FF4500;
+            margin-bottom: 10px; /* Reduced from 16px */
+        }
+        .text-medium {
+            font-size: 1rem; /* Reduced from 1.25rem */
+            color: #E6E6FA;
+            margin-bottom: 10px; /* Reduced from 20px */
+        }
+        .text-large {
+            font-size: 1.25rem; /* Reduced from 1.5rem */
+            color: #E6E6FA;
+            margin-bottom: 10px; /* Reduced from 16px */
+        }
+        .text-xlarge {
+            font-size: 1.75rem; /* Reduced from 2.25rem */
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 10px; /* Reduced from 20px */
+        }
+        .option-button {
+            background-color: #483D8B;
+            color: #ffffff;
+            padding: 8px; /* Reduced from 12px */
+            border-radius: 8px; /* Reduced from 12px */
+            margin: 6px 0; /* Reduced from 8px */
+            border: none;
+            cursor: pointer;
+            touch-action: manipulation;
+            width: 100%;
+            font-size: 1rem; /* Reduced from 1.25rem */
+            white-space: normal;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-sizing: border-box;
+        }
+        .option-button:hover {
+            filter: brightness(1.1);
+        }
+        .option-button.correct {
+            background-color: #00CED1;
+            animation: correctPulse 0.5s ease-in-out;
+        }
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Reduced from 200px */
+            gap: 8px; /* Reduced from 12px */
+            justify-content: center;
+            width: 100%;
+        }
+        .input-field {
+            width: 100%;
+            padding: 8px; /* Reduced from 12px */
+            border: 2px solid #FF4500;
+            border-radius: 8px; /* Reduced from 12px */
+            margin-bottom: 10px; /* Reduced from 16px */
+            font-size: 1rem; /* Reduced from 1.25rem */
+            color: #ffffff;
+            background-color: #1f2937;
+            outline: none;
+        }
+        .input-field:focus {
+            ring: 2px; /* Reduced from 3px */
+            ring-color: #FF4500;
+        }
+        .button-primary {
+            background-color: #FF4500;
+            color: #ffffff;
+            padding: 8px; /* Reduced from 12px */
+            border-radius: 8px; /* Reduced from 12px */
+            width: 100%;
+            font-size: 1rem; /* Reduced from 1.25rem */
+            border: none;
+            cursor: pointer;
+            touch-action: manipulation;
+            margin-top: 10px; /* Reduced from 16px */
+        }
+        .button-primary:hover {
+            filter: brightness(1.1);
+        }
+        .button-restart {
+            background-color: #FF4500;
+            color: #ffffff;
+            padding: 6px; /* Reduced from 10px */
+            border-radius: 8px; /* Reduced from 12px */
+            width: 120px; /* Reduced from 150px */
+            font-size: 0.875rem; /* Reduced from 1rem */
+            border: none;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .button-restart:hover {
+            filter: brightness(1.1);
+        }
+        .button-restart.return-base {
+            margin-top: 10px; /* Reduced from 15px */
+        }
+        .button-restart.next-step {
+            margin-top: 10px; /* Reduced from 15px */
+        }
+        .flex-col-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .block-buttons {
+            margin: 5px 0; /* Reduced from 10px */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px; /* Reduced from 10px */
+        }
+        .mission-buttons-container {
+            padding: 5px; /* Reduced from 10px */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .navigation-arrows {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0; /* Reduced from 10px */
+        }
+        .arrow-button {
+            background-color: #FFD700;
+            color: #4B0082;
+            padding: 6px; /* Reduced from 10px */
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem; /* Reduced from 1.5rem */
+            margin: 0 5px; /* Reduced from 10px */
+            transition: transform 0.2s;
+        }
+        .arrow-button:hover {
+            transform: scale(1.1);
+        }
+        .arrow-button:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+        }
+        .menu-container {
+            position: fixed;
+            top: 10px; /* Reduced from 15px */
+            right: 10px; /* Reduced from 15px */
+            z-index: 3001;
+        }
+        .menu-button {
+            background-color: #FFD700;
+            color: #4B0082;
+            padding: 6px 12px; /* Reduced from 10px 20px */
+            border-radius: 6px; /* Reduced from 8px */
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem; /* Reduced from 1rem */
+            font-weight: bold;
+        }
+        .menu-dropdown {
+            position: absolute;
+            top: 40px; /* Reduced from 50px */
+            right: 0;
+            background-color: #483D8B;
+            border: 2px solid #FFD700;
+            border-radius: 6px; /* Reduced from 8px */
+            padding: 6px; /* Reduced from 10px */
+            display: flex;
+            flex-direction: column;
+            gap: 6px; /* Reduced from 10px */
+        }
+        .menu-item {
+            background-color: #FF4500;
+            color: #ffffff;
+            padding: 6px 12px; /* Reduced from 8px 16px */
+            border-radius: 6px; /* Reduced from 8px */
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem; /* Reduced from 1rem */
+        }
+        .game-cover {
+            width: 150px; /* Reduced from 200px */
+            height: 150px; /* Reduced from 200px */
+            margin: 10px auto; /* Reduced from 20px */
+            border: 2px solid #FFD700; /* Reduced from 3px */
+            border-radius: 8px; /* Reduced from 12px */
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); /* Reduced shadow */
+            object-fit: cover;
+        }
+        .character-select-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px; /* Reduced from 15px */
+            margin-top: 10px; /* Reduced from 20px */
+        }
+        .character-button {
+            padding: 10px; /* Reduced from 15px */
+            border-radius: 8px; /* Reduced from 12px */
+            border: 2px solid #FFD700;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem; /* Reduced from 1.25rem */
+            color: #ffffff;
+        }
+        .character-button:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+        }
+        .character-image {
+            width: 40px; /* Reduced from 60px */
+            height: 40px; /* Reduced from 60px */
+            border-radius: 6px; /* Reduced from 8px */
+            margin-bottom: 5px; /* Reduced from 10px */
+            object-fit: cover;
+        }
+        .selected-character {
+            width: 60px; /* Reduced from 80px */
+            height: 60px; /* Reduced from 80px */
+            margin: 5px auto; /* Reduced from 10px */
+            border-radius: 6px; /* Reduced from 8px */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem; /* Reduced from 2rem */
+            border: 2px solid #FFD700;
+        }
+        .selected-character-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px; /* Reduced from 8px */
+            object-fit: cover;
+        }
+        .feedback-correct {
+            font-size: 1.5rem; /* Reduced from 2rem */
+            color: #FFD700;
+            margin-top: 8px; /* Reduced from 10px */
+        }
+        .feedback-incorrect {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); } /* Reduced from -10px */
+            50% { transform: translateX(8px); } /* Reduced from 10px */
+            75% { transform: translateX(-8px); } /* Reduced from -10px */
+        }
+        .highlight-word {
+            font-size: 1.25rem; /* Reduced from 1.5rem */
+            color: #FFD700;
+            margin-bottom: 10px; /* Reduced from 15px */
+        }
+        .highlight-letter {
+            color: #FF4500;
+            font-weight: bold;
+        }
+        .star-award-container {
+            position: absolute;
+            top: 15px; /* Reduced from 20px */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px; /* Reduced from 20px */
+            z-index: 2001;
+        }
+        .star-award {
+            opacity: 0;
+            color: #FFD700;
+            text-shadow: 0 0 8px #FFD700; /* Reduced from 10px */
+            animation: starFadeIn 1s ease-in forwards;
+        }
+        .star-award:nth-child(1) {
+            font-size: 1.5rem; /* Reduced from 2rem */
+            animation-delay: 0s;
+        }
+        .star-award:nth-child(2) {
+            font-size: 2rem; /* Reduced from 3rem */
+            animation-delay: 1s;
+        }
+        .star-award:nth-child(3) {
+            font-size: 1.5rem; /* Reduced from 2rem */
+            animation-delay: 2s;
+        }
+        @keyframes starFadeIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div id="root"></div>
+    <script>
+        // Генерация звезд и метеоров
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = `${Math.random() * 4}px`;
+            star.style.height = star.style.width;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            starsContainer.appendChild(star);
+        }
+        for (let i = 0; i < 10; i++) {
+            const meteor = document.createElement('div');
+            meteor.className = 'meteor';
+            meteor.style.left = `${Math.random() * 100}%`;
+            meteor.style.top = `${Math.random() * -50}%`;
+            meteor.style.animationDelay = `${Math.random() * 3}s`;
+            starsContainer.appendChild(meteor);
+        }
+
+        // Web Audio API
+        let audioContext;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.error('Ошибка Web Audio API:', e);
+        }
+
+        function playSound(frequency, duration, type = 'square', volume = 0.03335) {
+            if (!audioContext) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playSequence(frequencies, durationPerNote, type = 'square', volume = 0.03335) {
+            if (!audioContext) return;
+            frequencies.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime + index * durationPerNote);
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime + index * durationPerNote);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.start(audioContext.currentTime + index * durationPerNote);
+                oscillator.stop(audioContext.currentTime + (index + 1) * durationPerNote);
+            });
+        }
+
+        const allQuestions = [
+            { question: 'Какое слово рифмуется с "Ложка"?', correct_answer: "кошка", options: ["собака", "кошка", "мышка", "стол"], word: "ложка", highlight: "о" },
+            { question: 'Какое слово рифмуется с "Диван"?', correct_answer: "туман", options: ["кот", "туман", "стул", "лампа"], word: "диван", highlight: "а" },
+            { question: 'Какой звук в начале слова "слон"?', correct_answer: "с", options: ["л", "с", "н", "о"], word: "слон", highlight: "с" },
+            { question: 'Какой звук в конце слова "глаз"?', correct_answer: "с", options: ["г", "а", "х", "с"], word: "глаз", highlight: "с" },
+            { question: 'Какая гласная под ударением в "Телевизор"?', correct_answer: "и", options: ["е", "и", "о", "р"], word: "телевизор", highlight: "и" },
+            { question: 'Что будет, если изменить звук в "Дом" на "т"?', correct_answer: "том", options: ["ком", "том", "сом", "ком"], word: "дом", highlight: "д" },
+            { question: 'Назови слово, начинающееся на звук "СТ"', start_sound: "ст", options: [] },
+            { question: 'Какое слово с "ч" в середине?', correct_answer: "кочерга", options: ["собака", "стол", "мышка", "кочерга"], word: "кочерга", highlight: "ч" },
+            { question: 'Что получится, если к "Рыба" добавить "к"?', correct_answer: "рыбак", options: ["рыбак", "рыба", "рыбка", "рыбок"], word: "рыба", highlight: "а" },
+            { question: 'Какое слово заканчивается на "а"?', correct_answer: "луна", options: ["кот", "дом", "луна", "лес"], word: "луна", highlight: "а" },
+            { question: 'Какое слово рифмуется с "Ёлка"?', correct_answer: "чёлка", options: ["трава", "тень", "чёлка", "окно"], word: "ёлка", highlight: "ё" },
+            { question: 'Какой звук в середине слова "мед"?', correct_answer: "е", options: ["м", "е", "д", "о"], word: "мед", highlight: "е" },
+            { question: 'Что будет, если изменить звук в "Лес" на "в"?', correct_answer: "вес", options: ["вес", "лес", "кес", "рес"], word: "лес", highlight: "л" },
+            { question: 'Какой звук в начале слова "птица"?', correct_answer: "п", options: ["т", "и", "ц", "п"], word: "птица", highlight: "п" },
+            { question: 'Какое слово рифмуется с "Рубашка"?', correct_answer: "букашка", options: ["машина", "столик", "букашка", "дерево"], word: "рубашка", highlight: "а" },
+            { question: 'Какой звук в конце слова "кот"?', correct_answer: "т", options: ["к", "о", "т", "а"], word: "кот", highlight: "т" },
+            { question: 'Какой звук в начале слова "ракета"?', correct_answer: "р", options: ["а", "к", "е", "р"], word: "ракета", highlight: "р" },
+            { question: 'Какое слово начинается на "Зв"?', correct_answer: "звезда", options: ["луна", "звезда", "солнце", "звезда"], word: "звезда", highlight: "з" },
+            { question: 'Что рифмуется с "Пес"?', correct_answer: "лес", options: ["дом", "сон", "кот", "лес"], word: "пес", highlight: "е" },
+            { question: 'Какой звук в середине слова "луна"?', correct_answer: "у", options: ["л", "у", "н", "а"], word: "луна", highlight: "у" },
+            { question: 'Какое слово рифмуется с "Слон"?', correct_answer: "сон", options: ["сон", "дом", "лес", "река"], word: "слон", highlight: "о" },
+            { question: 'Какой звук в конце слова "звезда"?', correct_answer: "а", options: ["з", "а", "е", "в"], word: "звезда", highlight: "а" },
+            { question: 'Какой звук в начале слова "свет"?', correct_answer: "с", options: ["в", "е", "т", "с"], word: "свет", highlight: "с" },
+            { question: 'Какой звук в конце слова "дом"?', correct_answer: "м", options: ["о", "д", "а", "м"], word: "дом", highlight: "м" },
+            { question: 'Какое слово рифмуется с "Звезда"?', correct_answer: "беда", options: ["луна", "птица", "гора", "беда"], word: "звезда", highlight: "а" },
+            { question: 'Какое слово рифмуется с "Космос"?', correct_answer: "голос", options: ["голос", "звук", "огонь", "вода"], word: "космос", highlight: "о" },
+            { question: 'Что получится из "Мят" с добавлением "а"?', correct_answer: "мята", options: ["дата", "мята", "маты", "ката"], word: "мят", highlight: "я" },
+            { question: 'Какое слово с "р" в начале?', correct_answer: "ракета", options: ["луна", "клубок", "звезда", "ракета"], word: "ракета", highlight: "р" },
+            { question: 'Какое слово рифмуется с "Гармошка"?', correct_answer: "картошка", options: ["яблоко", "картошка", "цветок", "стол"], word: "гармошка", highlight: "о" },
+            { question: 'Какое слово рифмуется с "Река"?', correct_answer: "рука", options: ["комок", "лес", "дом", "рука"], word: "река", highlight: "е" },
+            { question: 'Какое слово рифмуется с "Мяч"?', correct_answer: "плач", options: ["смех", "игра", "плач", "сон"], word: "мяч", highlight: "я" },
+            { question: 'Какое слово рифмуется с "Свет"?', correct_answer: "цвет", options: ["день", "цвет", "ночь", "огонь"], word: "свет", highlight: "е" },
+            { question: 'Какой звук в середине слова "котик"?', correct_answer: "т", options: ["к", "о", "т", "и"], word: "котик", highlight: "т" }
+        ];
+
+        // Distribute questions into 9 missions (steps) of 3-4 questions each
+        const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5);
+        const missions = [];
+        for (let i = 0; i < 9; i++) {
+            const start = i * 4;
+            const end = i === 8 ? 33 : start + 4; // Last mission has remaining question
+            const missionQuestions = shuffledQuestions.slice(start, end);
+            missions.push(missionQuestions.map((task, index) => ({ ...task, localIndex: index })));
+        }
+
+        const questionsPerMission = [4, 4, 4, 4, 4, 4, 4, 4, 1];
+
+        // Define characters with updated names and images
+        const characters = [
+            { name: "Капитан Макс Звёздный", color: "#1E90FF", image: "https://github.com/Ray0fHope/-/raw/main/character_1_top_left.png" }, // Blue
+            { name: "Супер-Электро Рэй", color: "#32CD32", image: "https://github.com/Ray0fHope/-/raw/main/character_2_top_right.png" }, // Green
+            { name: "Профессор Галаксикус", color: "#FF4500", image: "https://github.com/Ray0fHope/-/raw/main/character_3_bottom_left.png" }, // Orange
+            { name: "Робби ИнфоТрон", color: "#800080", image: "https://github.com/Ray0fHope/-/raw/main/character_4_bottom_right.png" } // Purple
+        ];
+
+        function SplashScreen({ onFadeOut }) {
+            React.useEffect(() => {
+                const timer = setTimeout(() => {
+                    onFadeOut();
+                }, 3000); // 1.5s display + 1.5s fade-out
+                return () => clearTimeout(timer);
+            }, [onFadeOut]);
+
+            return React.createElement(
+                'div',
+                { className: 'splash-screen' },
+                React.createElement('img', {
+                    src: 'https://github.com/Ray0fHope/-/raw/main/QLZ8aPLXUhMXPjxaKXDIfI8z05y2vdg3Kzqb9JDjGRJ1mLstsbd06hNdmBiv5yBLRMmMGhcitgt3lOWnYCmLyMs9.jpg',
+                    alt: 'Splash Screen',
+                    className: 'splash-image'
+                })
+            );
+        }
+
+        function ErrorMessage({ message }) {
+            return React.createElement(
+                'div',
+                { className: 'quiz-container card' },
+                React.createElement('h1', { className: 'title-large' }, '🚀 Ошибка!'),
+                React.createElement('p', { className: 'text-medium' }, message)
+            );
+        }
+
+        function RocketFinal({ isFlying }) {
+            return React.createElement(
+                'div',
+                { className: `rocket-final ${isFlying ? 'flying' : ''}`, style: { left: '0%' } },
+                '🚀'
+            );
+        }
+
+        function CelebrationFallback({ show }) {
+            if (!show) return null;
+            const confetti = Array.from({ length: 200 }).map((_, i) =>
+                React.createElement('div', {
+                    key: `confetti-${i}`,
+                    className: 'confetti',
+                    style: {
+                        left: `${Math.random() * 100}%`,
+                        animationDelay: `${Math.random() * 1}s`,
+                        animationDuration: `${1.5 + Math.random() * 1}s`
+                    }
+                })
+            );
+            return React.createElement('div', { className: 'celebration-container' }, confetti);
+        }
+
+        function StarAwards({ show }) {
+            if (!show) return null;
+            return React.createElement(
+                'div',
+                { className: 'star-award-container' },
+                React.createElement('span', { className: 'star-award' }, '⭐'),
+                React.createElement('span', { className: 'star-award' }, '⭐'),
+                React.createElement('span', { className: 'star-award' }, '⭐')
+            );
+        }
+
+        function Menu({ currentPage, setCurrentPage, onBack }) {
+            const [isOpen, setIsOpen] = React.useState(false);
+            return React.createElement(
+                'div',
+                { className: 'menu-container' },
+                React.createElement(
+                    'button',
+                    { className: 'menu-button', onClick: () => setIsOpen(!isOpen) },
+                    'Меню'
+                ),
+                isOpen && React.createElement(
+                    'div',
+                    { className: 'menu-dropdown' },
+                    currentPage !== 'main' && currentPage !== 'character-select' && React.createElement(
+                        'button',
+                        { className: 'menu-item', onClick: onBack },
+                        'Назад'
+                    ),
+                    React.createElement(
+                        'button',
+                        { className: 'menu-item', onClick: () => { setCurrentPage('rules'); setIsOpen(false); } },
+                        'Правила игры'
+                    ),
+                    React.createElement(
+                        'button',
+                        { className: 'menu-item', onClick: () => { setCurrentPage('teacher'); setIsOpen(false); } },
+                        'Справочные материалы'
+                    ),
+                    currentPage !== 'main' && currentPage !== 'character-select' && React.createElement(
+                        'button',
+                        { className: 'menu-item', onClick: () => { setCurrentPage('main'); setIsOpen(false); } },
+                        'На главную'
+                    ),
+                    React.createElement(
+                        'button',
+                        { className: 'menu-item', onClick: () => { setCurrentPage('character-select'); setIsOpen(false); } },
+                        'Выбрать персонажа'
+                    )
+                )
+            );
+        }
+
+        function QuizApp() {
+            const [currentPage, setCurrentPage] = React.useState('splash');
+            const [currentTaskIndex, setCurrentTaskIndex] = React.useState(0);
+            const [currentMission, setCurrentMission] = React.useState(0);
+            const [userAnswer, setUserAnswer] = React.useState('');
+            const [isStarted, setIsStarted] = React.useState(false);
+            const [isFinished, setIsFinished] = React.useState(false);
+            const [error, setError] = React.useState(null);
+            const [imagePosition, setImagePosition] = React.useState(0);
+            const [isRocketFlying, setIsRocketFlying] = React.useState(false);
+            const [glowKey, setGlowKey] = React.useState(0);
+            const [showFireworks, setShowFireworks] = React.useState(false);
+            const [missionProgress, setMissionProgress] = React.useState(Array(9).fill(0));
+            const [missionCompleted, setMissionCompleted] = React.useState(Array(9).fill(false));
+            const [showMissionCelebration, setShowMissionCelebration] = React.useState(false);
+            const [showStarAwards, setShowStarAwards] = React.useState(false);
+            const [feedbackState, setFeedbackState] = React.useState(null);
+            const [selectedCharacter, setSelectedCharacter] = React.useState(null);
+            const [currentMissionPage, setCurrentMissionPage] = React.useState(0); // Pagination state
+            const finalScreenRef = React.useRef(null);
+
+            const tasks = missions[currentMission] || [];
+            const questionsInCurrentMission = questionsPerMission[currentMission];
+            const sectionWidth = 100 / questionsInCurrentMission;
+            const filledSections = Math.min(missionProgress[currentMission], questionsInCurrentMission);
+
+            // Pagination logic: Display 3 missions per page
+            const missionsPerPage = 3;
+            const totalMissionPages = Math.ceil(missions.length / missionsPerPage);
+            const startMissionIndex = currentMissionPage * missionsPerPage;
+            endMissionIndex = startMissionIndex + missionsPerPage;
+            const displayedMissions = missions.slice(startMissionIndex, endMissionIndex);
+
+            const handlePreviousPage = () => {
+                if (currentMissionPage > 0) {
+                    setCurrentMissionPage(currentMissionPage - 1);
+                }
+            };
+
+            const handleNextPage = () => {
+                if (currentMissionPage < totalMissionPages - 1) {
+                    setCurrentMissionPage(currentMissionPage + 1);
+                }
+            };
+
+            const getQuestionNumberInMission = () => {
+                return missionProgress[currentMission] + 1;
+            };
+
+            const resetState = (mission) => {
+                setIsStarted(true);
+                setCurrentMission(mission);
+                setCurrentTaskIndex(0);
+                setUserAnswer('');
+                setIsFinished(false);
+                setError(null);
+                setImagePosition(0);
+                setIsRocketFlying(false);
+                setGlowKey(0);
+                setShowFireworks(false);
+                setShowMissionCelebration(false);
+                setShowStarAwards(false);
+                setFeedbackState(null);
+                let newMissionProgress = [...missionProgress];
+                newMissionProgress[mission] = 0;
+                setMissionProgress(newMissionProgress);
+            };
+
+            const handleStart = (mission) => {
+                if (!selectedCharacter) {
+                    setCurrentPage('character-select');
+                    return;
+                }
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        resetState(mission);
+                        setCurrentPage('game');
+                    });
+                } else {
+                    resetState(mission);
+                    setCurrentPage('game');
+                }
+            };
+
+            const handleRestart = () => {
+                resetState(currentMission);
+            };
+
+            const handleReturnToBase = () => {
+                setIsStarted(false);
+                setCurrentMission(0);
+                setCurrentTaskIndex(0);
+                setUserAnswer('');
+                setIsFinished(false);
+                setError(null);
+                setImagePosition(0);
+                setIsRocketFlying(false);
+                setGlowKey(0);
+                setShowFireworks(false);
+                setShowMissionCelebration(false);
+                setShowStarAwards(false);
+                setFeedbackState(null);
+                setCurrentPage('main');
+                setCurrentMissionPage(0); // Reset pagination on return to base
+            };
+
+            const triggerCelebration = () => {
+                setShowMissionCelebration(true);
+                playSequence([440, 554, 659, 880], 0.25, 'square');
+                setTimeout(() => setShowMissionCelebration(false), 4000);
+            };
+
+            const handleAnswer = (selectedAnswer) => {
+                if (!tasks[currentTaskIndex]) {
+                    setError('Задание не найдено');
+                    return;
+                }
+                const task = tasks[currentTaskIndex];
+                const isCorrect = task.question.startsWith('Назови слово')
+                    ? selectedAnswer.trim().toLowerCase().startsWith(task.start_sound)
+                    : selectedAnswer.trim().toLowerCase() === task.correct_answer.toLowerCase();
+
+                if (isCorrect) {
+                    setFeedbackState('correct');
+                    playSequence([440, 554, 659], 0.2, 'square');
+                    setShowFireworks(true);
+                    setTimeout(() => setShowFireworks(false), 1000);
+                } else {
+                    setFeedbackState('incorrect');
+                    playSound(200, 0.3, 'square');
+                }
+
+                let newMissionProgress = [...missionProgress];
+                newMissionProgress[currentMission] = Math.min(newMissionProgress[currentMission] + 1, questionsInCurrentMission);
+                setMissionProgress(newMissionProgress);
+                setImagePosition((newMissionProgress[currentMission] / questionsInCurrentMission) * 100);
+                setUserAnswer('');
+                setGlowKey(glowKey + 1);
+
+                if (currentTaskIndex + 1 < tasks.length) {
+                    setCurrentTaskIndex(currentTaskIndex + 1);
+                } else {
+                    let newMissionCompleted = [...missionCompleted];
+                    newMissionCompleted[currentMission] = true;
+                    setMissionCompleted(newMissionCompleted);
+                    triggerCelebration();
+                    if (currentMission === 8) {
+                        setShowStarAwards(true);
+                    }
+                    if (newMissionCompleted.every(completed => completed)) {
+                        setIsFinished(true);
+                    }
+                }
+            };
+
+            const handleNextMission = () => {
+                if (currentMission < 8) {
+                    resetState(currentMission + 1);
+                } else {
+                    handleReturnToBase();
+                }
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter' && userAnswer.trim()) handleAnswer(userAnswer);
+            };
+
+            const handleSplashFadeOut = () => {
+                setCurrentPage('character-select');
+            };
+
+            React.useEffect(() => {
+                if (isFinished) {
+                    setTimeout(() => setIsRocketFlying(true), 1000);
+                    setTimeout(() => triggerCelebration(), 100);
+                }
+            }, [isFinished]);
+
+            const getMissionStatus = (mission) => {
+                return missionCompleted[mission] ? '⭐' : '';
+            };
+
+            const highlightWord = (word, letter) => {
+                if (!word || !letter) return word;
+                const index = word.toLowerCase().indexOf(letter.toLowerCase());
+                if (index === -1) return word;
+                return (
+                    word.substring(0, index) +
+                    `<span class="highlight-letter">${word[index]}</span>` +
+                    word.substring(index + 1)
+                );
+            };
+
+            if (currentPage === 'splash') {
+                return React.createElement(SplashScreen, { onFadeOut: handleSplashFadeOut });
+            }
+
+            if (currentPage === 'character-select') {
+                return [
+                    React.createElement(Menu, { currentPage, setCurrentPage, onBack: () => setCurrentPage('main') }),
+                    React.createElement(
+                        'div',
+                        { className: 'quiz-container card' },
+                        React.createElement('h1', { className: 'title-large' }, 'Выбери персонажа'),
+                        React.createElement('p', { className: 'text-medium' }, 'Кто будет твоим спутником в космосе?'),
+                        React.createElement(
+                            'div',
+                            { className: 'character-select-grid' },
+                            characters.map((character, index) =>
+                                React.createElement(
+                                    'button',
+                                    {
+                                        key: index,
+                                        className: 'character-button',
+                                        style: { backgroundColor: character.color },
+                                        onClick: () => {
+                                            setSelectedCharacter(character);
+                                            setCurrentPage('main');
+                                        }
+                                    },
+                                    React.createElement('img', {
+                                        src: character.image,
+                                        alt: character.name,
+                                        className: 'character-image'
+                                    }),
+                                    React.createElement('span', null, character.name)
+                                )
+                            )
+                        )
+                    )
+                ];
+            }
+
+            if (currentPage === 'main') {
+                return [
+                    React.createElement(Menu, { currentPage, setCurrentPage, onBack: () => setCurrentPage('character-select') }),
+                    React.createElement(
+                        'div',
+                        { className: 'quiz-container card' },
+                        React.createElement('h1', { className: 'title-large' }, '🚀 Вселенная звука'),
+                        React.createElement('img', {
+                            src: 'https://github.com/Ray0fHope/-/raw/main/QLZ8aPLXUhMXPjxaKXDIfI8z05y2vdg3Kzqb9JDjGRJ1mLstsbd06hNdmBiv5yBLRMmMGhcitgt3lOWnYCmLyMs9.jpg',
+                            alt: 'Game Cover',
+                            className: 'game-cover'
+                        }),
+                        selectedCharacter && React.createElement(
+                            'div',
+                            { className: 'selected-character', style: { backgroundColor: selectedCharacter.color } },
+                            React.createElement('img', {
+                                src: selectedCharacter.image,
+                                alt: selectedCharacter.name,
+                                className: 'selected-character-image'
+                            })
+                        ),
+                        React.createElement('p', { className: 'text-medium' }, 'Выбери шаг и отправляйся в космос!'),
+                        React.createElement(
+                            'div',
+                            { className: 'flex-col-center' },
+                            React.createElement(
+                                'div',
+                                { className: 'navigation-arrows' },
+                                React.createElement(
+                                    'button',
+                                    {
+                                        className: 'arrow-button',
+                                        onClick: handlePreviousPage,
+                                        disabled: currentMissionPage === 0
+                                    },
+                                    '↑'
+                                )
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'mission-buttons-container' },
+                                displayedMissions.map((_, index) => {
+                                    const missionIndex = startMissionIndex + index;
+                                    return React.createElement(
+                                        'div',
+                                        { key: missionIndex, className: 'block-buttons' },
+                                        React.createElement(
+                                            'button',
+                                            { onClick: () => handleStart(missionIndex), className: 'button-restart' },
+                                            `Шаг ${missionIndex + 1}`
+                                        ),
+                                        React.createElement(
+                                            'span',
+                                            { style: { color: '#FFD700', fontSize: '1.25rem' } }, /* Reduced from 1.5rem */
+                                            getMissionStatus(missionIndex)
+                                        )
+                                    );
+                                })
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'navigation-arrows' },
+                                React.createElement(
+                                    'button',
+                                    {
+                                        className: 'arrow-button',
+                                        onClick: handleNextPage,
+                                        disabled: currentMissionPage === totalMissionPages - 1
+                                    },
+                                    '↓'
+                                )
+                            )
+                        )
+                    )
+                ];
+            }
+
+            if (currentPage === 'rules') {
+                return [
+                    React.createElement(Menu, { currentPage, setCurrentPage, onBack: () => setCurrentPage('main') }),
+                    React.createElement(
+                        'div',
+                        { className: 'quiz-container card' },
+                        React.createElement('h1', { className: 'title-large' }, 'Правила игры'),
+                        React.createElement('p', { className: 'text-medium' }, 'Цель игры — помочь космическому путешественнику отвечать на вопросы о звуках и словах.'),
+                        React.createElement('p', { className: 'text-medium' }, '1. Выбери шаг на главном экране.'),
+                        React.createElement('p', { className: 'text-medium' }, '2. Отвечай на вопросы, выбирая правильный ответ или вводя слово.'),
+                        React.createElement('p', { className: 'text-medium' }, '3. После завершения шага ты получишь звёздочку!'),
+                        React.createElement('p', { className: 'text-medium' }, '4. Пройди все шаги, чтобы завершить путешествие!')
+                    )
+                ];
+            }
+
+            if (currentPage === 'teacher') {
+                return [
+                    React.createElement(Menu, { currentPage, setCurrentPage, onBack: () => setCurrentPage('main') }),
+                    React.createElement(
+                        'div',
+                        { className: 'quiz-container card' },
+                        React.createElement('h1', { className: 'title-large' }, 'Справочные материалы'),
+                        React.createElement('p', { className: 'text-medium' }, 'Полезная информация для педагогов:'),
+                        React.createElement('p', { className: 'text-medium' }, 'Игра помогает детям развивать фонематический слух и навыки работы со звуками.'),
+                        React.createElement('h2', { className: 'title-medium' }, 'Физминутка'),
+                        React.createElement('p', { className: 'text-medium' }, 'Предложите детям встать и выполнить простые движения:'),
+                        React.createElement('p', { className: 'text-medium' }, '1. Поднимите руки вверх, как ракета, и скажите "Взлёт!".'),
+                        React.createElement('p', { className: 'text-medium' }, '2. Покружитесь, как звёзды, и скажите "Сияем!".'),
+                        React.createElement('p', { className: 'text-medium' }, '3. Присядьте и скажите "Приземление!".')
+                    )
+                ];
+            }
+
+            if (error) {
+                return [
+                    React.createElement(Menu, { currentPage, setCurrentPage, onBack: handleReturnToBase }),
+                    React.createElement(ErrorMessage, { message: error })
+                ];
+            }
+
+            if (missionProgress[currentMission] === questionsInCurrentMission) {
+                return [
+                    React.createElement(Menu, { currentPage, setCurrentPage, onBack: handleReturnToBase }),
+                    currentMission === 8 && React.createElement(StarAwards, { show: showStarAwards }),
+                    React.createElement(
+                        'div',
+                        { className: 'quiz-container card flex-col-center' },
+                        React.createElement('h1', { className: 'title-large' }, '🎉 Шаг завершён!'),
+                        React.createElement('p', { className: 'text-xlarge' }, 'Ты молодец, полетели дальше!'),
+                        currentMission !== 8 && React.createElement('p', { className: 'text-large' }, 'Ты получил: ⭐'),
+                        selectedCharacter && React.createElement(
+                            'div',
+                            { className: 'selected-character', style: { backgroundColor: selectedCharacter.color } },
+                            React.createElement('img', {
+                                src: selectedCharacter.image,
+                                alt: selectedCharacter.name,
+                                className: 'selected-character-image'
+                            })
+                        ),
+                        React.createElement(
+                            'button',
+                            { onClick: handleRestart, className: 'button-restart' },
+                            'Повторить шаг'
+                        ),
+                        currentMission < 8 && React.createElement(
+                            'button',
+                            { onClick: handleNextMission, className: 'button-restart next-step' },
+                            'Следующий шаг'
+                        ),
+                        React.createElement(
+                            'button',
+                            { onClick: handleReturnToBase, className: 'button-restart return-base' },
+                            'Вернуться на базу'
+                        )
+                    ),
+                    React.createElement(CelebrationFallback, { show: showMissionCelebration })
+                ];
+            }
+
+            if (isFinished) {
+                return [
+                    React.createElement(Menu, { currentPage, setCurrentPage, onBack: handleReturnToBase }),
+                    React.createElement(
+                        'div',
+                        { ref: finalScreenRef, className: 'quiz-container card flex-col-center' },
+                        React.createElement('h1', { className: 'title-large' }, '🚀 Все шаги завершены!'),
+                        React.createElement('p', { className: 'text-large' }, 'Ты прошёл все шаги!'),
+                        React.createElement('p', { className: 'text-xlarge' }, 'Твоя награда: ⭐⭐⭐'),
+                        selectedCharacter && React.createElement(
+                            'div',
+                            { className: 'selected-character', style: { backgroundColor: selectedCharacter.color } },
+                            React.createElement('img', {
+                                src: selectedCharacter.image,
+                                alt: selectedCharacter.name,
+                                className: 'selected-character-image'
+                            })
+                        ),
+                        React.createElement(
+                            'button',
+                            { onClick: handleRestart, className: 'button-restart' },
+                            'Новый полёт'
+                        ),
+                        React.createElement(
+                            'button',
+                            { onClick: handleReturnToBase, className: 'button-restart return-base' },
+                            'Вернуться на базу'
+                        )
+                    ),
+                    React.createElement(CelebrationFallback, { show: showMissionCelebration }),
+                    React.createElement(RocketFinal, { isFlying: isRocketFlying })
+                ];
+            }
+
+            if (!tasks[currentTaskIndex]) {
+                return [
+                    React.createElement(Menu, { currentPage, setCurrentPage, onBack: handleReturnToBase }),
+                    React.createElement(ErrorMessage, { message: 'Задание не найдено' })
+                ];
+            }
+
+            const task = tasks[currentTaskIndex];
+            const questionNumber = getQuestionNumberInMission();
+
+            return [
+                React.createElement(Menu, { currentPage, setCurrentPage, onBack: handleReturnToBase }),
+                React.createElement(
+                    'div',
+                    { className: 'progress-container' },
+                    React.createElement(
+                        'span',
+                        { className: 'progress-label' },
+                        `Шаг ${currentMission + 1}: Вопрос ${questionNumber}/${questionsInCurrentMission}`
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'progress-bar' },
+                        Array.from({ length: questionsInCurrentMission - 1 }, (_, i) =>
+                            React.createElement('div', {
+                                key: i,
+                                className: 'progress-mark',
+                                style: { left: `${(i + 1) * sectionWidth}%` }
+                            })
+                        ),
+                        React.createElement(
+                            'div',
+                            {
+                                className: 'progress-section',
+                                style: {
+                                    width: `${(filledSections / questionsInCurrentMission) * 100}%`
+                                }
+                            },
+                            React.createElement('div', {
+                                key: glowKey,
+                                className: 'glow-effect',
+                                style: {
+                                    width: `${sectionWidth}%`
+                                }
+                            })
+                        ),
+                        selectedCharacter && React.createElement(
+                            'img',
+                            {
+                                src: 'https://github.com/Ray0fHope/-/raw/main/мальчик.png',
+                                alt: 'Character on Rocket',
+                                className: `character-on-rocket ${feedbackState === 'correct' ? 'cheer' : feedbackState === 'incorrect' ? 'surprise' : ''}`,
+                                style: { left: `${imagePosition}%` }
+                            }
+                        )
+                    )
+                ),
+                React.createElement(
+                    'div',
+                    { className: `quiz-container card flex-col-center ${feedbackState === 'incorrect' ? 'feedback-incorrect' : ''}` },
+                    React.createElement('h1', { className: 'title-medium' }, `Шаг ${currentMission + 1}`),
+                    React.createElement('p', { className: 'text-medium' }, task.question),
+                    task.word && task.highlight && React.createElement(
+                        'div',
+                        { className: 'highlight-word', dangerouslySetInnerHTML: { __html: highlightWord(task.word, task.highlight) } }
+                    ),
+                    task.question.startsWith('Назови слово')
+                        ? [
+                            React.createElement('input', {
+                                type: 'text',
+                                value: userAnswer,
+                                onChange: (e) => setUserAnswer(e.target.value),
+                                onKeyPress: handleKeyPress,
+                                className: 'input-field',
+                                placeholder: 'Твой ответ',
+                                autoFocus: true,
+                                key: 'input'
+                            }),
+                            React.createElement(
+                                'button',
+                                {
+                                    onClick: () => handleAnswer(userAnswer),
+                                    disabled: !userAnswer.trim(),
+                                    className: 'button-primary',
+                                    key: 'submit'
+                                },
+                                'Отправить'
+                            )
+                          ]
+                        : React.createElement(
+                            'div',
+                            { className: 'options-grid' },
+                            task.options.map((option, index) =>
+                                React.createElement(
+                                    'button',
+                                    {
+                                        key: index,
+                                        onClick: () => handleAnswer(option),
+                                        className: `option-button ${userAnswer === option && task.correct_answer === option.toLowerCase() ? 'correct' : ''}`,
+                                        disabled: userAnswer !== ''
+                                    },
+                                    option.length > 10 ? option.substring(0, 10) + '...' : option
+                                )
+                            )
+                        ),
+                    feedbackState === 'correct' && React.createElement('div', { className: 'feedback-correct' }, '⭐'),
+                    selectedCharacter && React.createElement(
+                        'div',
+                        { className: 'character-game-display', style: { backgroundColor: selectedCharacter.color } },
+                        React.createElement('img', {
+                            src: selectedCharacter.image,
+                            alt: selectedCharacter.name,
+                            className: 'selected-character-image'
+                        })
+                    ),
+                    showFireworks ? React.createElement(CelebrationFallback, { show: true }) : null
+                )
+            ];
+        }
+
+        if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+            document.getElementById('root').innerHTML = `
+                <div class="quiz-container card">
+                    <h1 class="title-large">🚀 Ошибка запуска</h1>
+                    <p class="text-medium">Не удалось начать миссию. Проверь интернет и перезагрузи страницу!</p>
+                </div>
+            `;
+        } else {
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(React.createElement(QuizApp));
+        }
+    </script>
+</body>
+</html>
